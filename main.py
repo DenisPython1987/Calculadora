@@ -1,50 +1,36 @@
-#Calculadora
+import duploentry as du
 import tkinter as tk
 from tkinter import ttk
+from calcular import Calcular
 
-def adicionar_numero(num):
-    """Adiciona o número pressionado ao texto atual"""
-    valor_atual = resultado_var.get()
-    if valor_atual == '0':
-        resultado_var.set(str(num))
+def executar(op):
+    num1, num2 = frame.get_valores()
+    if num1 is None or num2 is None:
+        resultado_var.set("Erro: insira números válidos")
     else:
-        resultado_var.set(valor_atual + str(num))
+        resultado_var.set(Calcular.calcular(op, num1, num2))
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Exemplo DuploInput")
 
-#Aqui eu crio a janela principal
-root = tk.Tk()
+    painel = ttk.LabelFrame(root, text='Resultado')
+    painel.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-#Aqui eu determino o tamamnho e a posição da janela
-root.geometry('500x300+300+300')
+    resultado_var= tk.StringVar(value='0')
+    resultado = ttk.Label(painel, textvariable=resultado_var)
+    resultado.grid(row=0, column=0, sticky="nsew", ipadx=5, ipady=5)
 
-#Aqui eu determino o título da janela
-root.title('Calculadora')
+    frame = du.DuploInput(root)
+    frame.grid(row=1, column=0, sticky='nsew', padx=5, pady=5)
 
-#Aqui eu determino que a calculadora não pode ser redimensionada
-root.resizable(False, False)
+    
+    teclado = ttk.LabelFrame(root, text='Escolha uma operação:')
+    teclado.grid(row=4, column=0, sticky=tk.W + tk.E, padx=5, pady=5)
 
-#Aqui eu crio o painel onde será mostrada a janela
-mostrador = ttk.Labelframe(root, text='Resultado')
-mostrador.grid(row=0, column=0, columnspan=10, sticky='nsew')
-mostrador.columnconfigure(0, weight=10)
+    operações = ('+', '-', '*', '/')
+    for i, op in enumerate(operações):
+        ttk.Button(teclado, text=op, command=lambda o=op: executar(o)).grid(row=0,column=i, sticky='nsew', padx=5, pady=5)
+    
+  
 
-#Aqui eu crio o Label que vai mostrar o resultado
-resultado_var = tk.StringVar(value='0')
-painel = tk.Label(mostrador, textvariable=resultado_var)
-painel.grid(row=0, column=0, sticky=tk.E)
-
-#Aqui eu crio um frame para o teclado
-teclado = tk.Frame(root)
-
-#Aqui eu coloco o grid em quatro colunas e três linhas
-teclado.grid(row=2, column=0, rowspan=3, columnspan=4, sticky="nsew")
-
-for i in range(1, 10):
-    botão = tk.Button(teclado, text=str(i), command=lambda num=i:adicionar_numero(num))
-    linha = ((i - 1) // 3) + 1
-    coluna = (i - 1) % 3
-    botão.grid(row=linha, column=coluna, pady=5, padx=5)
-
-botão_0 = tk.Button(teclado, text='0', width=15, command=lambda: adicionar_numero("0"))
-botão_0.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
-
-root.mainloop()
+    root.mainloop()
